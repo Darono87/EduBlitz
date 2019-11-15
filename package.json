@@ -1,0 +1,22 @@
+{
+  "name": "edublitz",
+  "version": "1.0.0",
+  "description": "An application i am currently developing which is mainly focused on creating convenient flashacards system to efficently learn and study at your own pace",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Darono87/EduBlitz.git"
+  },
+  "author": "VithTheBuilder87",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Darono87/EduBlitz/issues"
+  },
+  "homepage": "https://github.com/Darono87/EduBlitz#readme",
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}
