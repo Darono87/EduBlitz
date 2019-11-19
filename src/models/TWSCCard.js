@@ -28,10 +28,16 @@ const TWSCCard = new mongoose.Schema({
     TypeOfCheck: { //link to the types of checking the answer appropriate to the user's demands
         type: mongoose.Types.ObjectId,
         required: true
+    },
+    Owner: { //Owner of the card, user
+        type: mongoose.Types.ObjectId,
+        required: true
     }
 },{
-    createdAt: "Created",
-    updatedAt: "Updated"
+    timestamps: {
+        createdAt: "Created",
+        updatedAt: "Updated"
+    }   
 });
 
 const TWSCCardModel = mongoose.model("TWSCCard",TWSCCard);
