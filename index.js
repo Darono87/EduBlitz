@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const hbs = require("hbs");
 const mongoose = require("mongoose");
+const userR = require("./src/routers/User");
 require('dotenv').config();
 
 var app = express();
@@ -13,6 +14,7 @@ app.set("view engine","hbs");
 app.set("views",viewsPath);
 app.use(express.json());
 app.use(express.static(staticPath));
+app.use(userR);
 hbs.registerPartials(viewsPath);
 
 app.get("/",(req,res)=>{

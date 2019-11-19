@@ -11,7 +11,7 @@ var router = express.Router();
 function isGoodPassword(pass) { // _ - okay + alphanumeric. Do not start with 0-9
     var code, i, len;
   
-    if (len < 8 || len > 30)
+    if (pass.length < 8 || pass.length > 30)
         return false;
 
     if(pass.charCodeAt(0) >= 48 && pass.charCodeAt(0) <= 57)
@@ -44,10 +44,9 @@ router.post("/register", async (req,res)=>{
             throw Error("credentials");
         }
 
-        var salt = await bcrypt.genSalt();
+        var salt = await bcrypt.genSalt(13);
         var passHashed = await bcrypt.hash(pass, salt);
         newUser.Password = passHashed;
-        newUser.Salt = salt;
 
         var _id = mongoose.Types.ObjectId();
         newUser._id = _id;
@@ -68,5 +67,41 @@ router.post("/register", async (req,res)=>{
         }
     }
 });
+
+router.post("/login", async (req, res)=>{
+
+    try{
+
+        //We are given user's nickname and password
+
+        var u = await userModel.findOne({Nickname: req.body.Nickname});
+
+        if(!u)
+            throw new Error("nouser");
+        
+        var fine = await bcrypt.compare(req.body.Password,u.Password);
+
+        if(!fine)
+            throw new Error("nouser");
+
+        //Everything is fine, proceed 
+
+        var token = jwt.sign({_id: u._id},process.env.SECRET,{expiresIn: "1h"});
+        u.Tokens.push(token);
+
+        await u.save();
+
+        res.send({user: u, token});
+
+
+    }catch(e){
+        if(e.message == "nouser")
+            res.status("404").send();
+        else
+            res.status("500").send();
+    }
+
+});
+
 
 module.exports = router;

@@ -9,23 +9,22 @@ var user = new mongoose.Schema({
 
         },
         trim: true,
-        required: true
+        required: true,
+        unique: true
     },
     Password: { //Hashed with salt multiple times
         type: String,
         required: true
     },
-    Salt: {
-        type: String,
-        required: true
-    },
     Tokens: [String],
-    Settings: [mongoose.Types.ObjectID] //settings set up by the user
+    Settings: {type: [mongoose.Types.ObjectID], default: []} //settings set up by the user
 },{
-    createdAt: "Created",
-    updatedAt: "Updated"
+    timestamps:{
+        createdAt: "Created",
+        updatedAt: "Updated"
+    }
 });
 
-var userModel = mongoose.Model(user);
+var userModel = mongoose.model("User",user);
 
 module.exports = userModel;
