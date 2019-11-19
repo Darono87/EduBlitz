@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const userModel = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const verify = require("../middleware/verify");
 
 var router = express.Router();
 
@@ -99,6 +100,27 @@ router.post("/login", async (req, res)=>{
             res.status("404").send();
         else
             res.status("500").send();
+    }
+
+});
+
+router.post("/logout", verify, async(req,res)=>{
+    try{
+
+        var index = 0;
+        for(var i = 0; i < req.requester.Tokens.length; i++)
+            if(req.requester.Tokens[i]==req.token){
+                index = i;
+                break;
+            }
+        
+        req.requester.Tokens.splice(index,1);
+        await req.requester.save();
+
+        res.send();
+   
+    }catch(e){
+        res.status(500).send();
     }
 
 });
