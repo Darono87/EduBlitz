@@ -27,8 +27,9 @@ const TWSCCard = new mongoose.Schema({
     Tags: [{type: String, lowercase: true, trim: true}],
     TypeOfCheck: { //link to the types of checking the answer appropriate to the user's demands
         type: mongoose.Types.ObjectId,
-        required: true
+        default: undefined
     },
+    FeelCheck: {type: Boolean, default: false},
     Owner: { //Owner of the card, user
         type: mongoose.Types.ObjectId,
         required: true
@@ -39,6 +40,42 @@ const TWSCCard = new mongoose.Schema({
         updatedAt: "Updated"
     }   
 });
+
+TWSCCard.methods.validateLinking = function(){
+
+    var imgCount = 0;
+    var txtCount = 0;
+    var audCount = 0;
+
+    for(var i = 0; i < this.LinkingFront.length; i++){
+        if(this.LinkingFront[i] === "txt")
+            txtCount++;
+        if(this.LinkingFront[i] === "img")
+            imgCount++;
+        if(this.LinkingFront[i] === "aud")
+            audCount++;
+    }
+
+    if( txtCount != this.TextsFront.length || imgCount != this.ImagesFront.length || audCount != this.AudioFront.length )
+        throw new Error("baddata");
+
+    imgCount = 0;
+    txtCount = 0;
+    audCount = 0;
+
+    for(var i = 0; i < this.LinkingBack.length; i++){
+        if(this.LinkingBack[i] === "txt")
+            txtCount++;
+        if(this.LinkingBack[i] === "img")
+            imgCount++;
+        if(this.LinkingBack[i] === "aud")
+            audCount++;
+    }
+
+    if( txtCount != this.TextsBack.length || imgCount != this.ImagesBack.length || audCount != this.AudioBack.length )
+        throw new Error("baddata");
+
+}
 
 const TWSCCardModel = mongoose.model("TWSCCard",TWSCCard);
 

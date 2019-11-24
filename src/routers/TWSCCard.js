@@ -3,14 +3,80 @@
 
 const express = require("express");
 const TWSCCardModel = require("../models/TWSCCard");
+const verify = require("../middleware/verify");
 
 var router = express.Router();
 
 //CREATE
 
-router.post("/card",(req,res)=>{
+router.post("/card",verify, async (req,res)=>{
 
-    res.send();
+    try{
+
+        var newCard = new TWSCCardModel;
+
+        //set Name and desription
+
+        if(req.body.Name)
+            newCard.Name = req.body.Name;
+
+        newCard.Description = req.body.Description;
+
+        //Front tabs
+
+        newCard.ImagesFront = req.body.ImagesFront;
+        newCard.AudioFront = req.body.AudioFront;
+        newCard.TextsFront = req.body.TextsFront;
+        newCard.LinkingFront = req.body.LinkingFront;
+
+        //Back data
+
+        newCard.ImagesBack = req.body.ImagesBack;
+        newCard.AudioBack = req.body.AudioBack;
+        newCard.TextsBack = req.body.TextsBack;
+        newCard.LinkingBack = req.body.LinkingBack;
+
+        //validate
+        
+        newCard.validateLinking();
+        
+        //Extras and tags
+
+        newCard.Extras = req.body.Extras;
+        newCard.Tags = req.body.Tags;
+
+        //TypeOfCheck
+        //now assume checkMethod field was set to "feel"
+
+        if(!req.body.CheckMethod)
+            throw new Error("baddata");
+
+        newCard.FeelCheck = true;
+        
+        //Owner
+
+        newCard.Owner = req.requester._id;
+        
+        await newCard.save();
+        res.status(201).send(newCard);
+
+    }catch(e){
+
+        if(e.errors || e.message == "baddata" || e.name == "MongoError"){
+            res.status("400").send();
+        } else{
+            res.status("500").send();
+        }
+
+    }
+});
+
+router.delete("/card/:id",verify, async (req,res)=>{
+
+    var toDelete = req.params.id;
+
+    
+
 
 });
 
