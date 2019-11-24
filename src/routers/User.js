@@ -55,7 +55,7 @@ router.post("/register", async (req,res)=>{
         var token = jwt.sign({_id},process.env.SECRET,{expiresIn: "1h"});
         newUser.Tokens.push(token);
 
-        newUser.save();
+        await newUser.save();
 
         res.status("201").send(newUser);
 

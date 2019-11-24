@@ -73,10 +73,19 @@ router.post("/card",verify, async (req,res)=>{
 
 router.delete("/card/:id",verify, async (req,res)=>{
 
-    var toDelete = req.params.id;
+    try{
 
+        var toDelete = req.params.id;
+        var foundItem = await TWSCCardModel.findOneAndRemove({_id: toDelete, Owner: req.requester._id});
+        if(!foundItem)
+            res.status(404).send();
+
+        res.status(200).send(foundItem);
+
+    }catch(e){
+        res.status(404).send();
+    }
     
-
 
 });
 

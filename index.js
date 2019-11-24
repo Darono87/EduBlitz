@@ -9,7 +9,7 @@ require('dotenv').config();
 var app = express();
 var staticPath = path.join(__dirname,"./public");
 var viewsPath = path.join(__dirname,"./views");
-mongoose.connect(process.env.DATABASE, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true});
+mongoose.connect(process.env.DATABASE, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false});
 
 app.set("view engine","hbs");
 app.set("views",viewsPath);
