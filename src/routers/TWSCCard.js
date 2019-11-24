@@ -89,4 +89,21 @@ router.delete("/card/:id",verify, async (req,res)=>{
 
 });
 
+router.get("/card/:id", verify, async(req,res)=>{
+
+    try{
+
+        var toGet = req.params.id;
+        var foundItem = await TWSCCardModel.findOne({_id: toGet, Owner: req.requester._id});
+        if(!foundItem)
+            res.status(404).send();
+
+        res.status(200).send(foundItem);
+
+    }catch(e){
+        res.status(404).send();
+    }
+
+});
+
 module.exports = router;
