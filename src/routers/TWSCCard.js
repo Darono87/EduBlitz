@@ -89,6 +89,19 @@ router.delete("/card/:id",verify, async (req,res)=>{
 
 });
 
+router.get("/card/all",verify,async(req,res)=>{
+
+    try{
+        
+        var foundItems = await TWSCCardModel.find({Owner: req.requester._id});
+        res.status(200).send(foundItems);
+
+    }catch(e){
+        res.status(500).send();
+    }
+
+});
+
 router.get("/card/:id", verify, async(req,res)=>{
 
     try{
