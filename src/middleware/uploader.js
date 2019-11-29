@@ -8,14 +8,19 @@ const imgExtensions = ["png", "jpg", "jpeg"];
 
 function quickValidate(req, file, cb) {
     var extension = file.originalname.split(".")[1];
-    if (audioExtensions.some((v) => v === extension))
+    if (audioExtensions.some((v) => v === extension)){
         var path = "./public/uploads/" + req.requester._id + "/audio";
-    else if (imgExtensions.some((v) => v === extension))
+        var type = "AUD";
+    }
+    else if (imgExtensions.some((v) => v === extension)){
         var path = "./public/uploads/" + req.requester._id + "/images";
+        var type = "IMG";
+    }
     else
         cb(null, false);
 
     file.pathToSave = path;
+    file.fileType = type;
 
     cb(null, true);
 }
