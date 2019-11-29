@@ -3,6 +3,7 @@ const path = require("path");
 const hbs = require("hbs");
 const mongoose = require("mongoose");
 const userR = require("./src/routers/User");
+const mediaR = require("./src/routers/Media");
 const TWSCCardR = require("./src/routers/TWSCCard");
 require('dotenv').config();
 
@@ -16,6 +17,7 @@ app.set("views",viewsPath);
 app.use(express.json());
 app.use(express.static(staticPath));
 app.use(userR);
+app.use(mediaR);
 app.use(TWSCCardR);
 hbs.registerPartials(viewsPath);
 

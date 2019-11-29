@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 var allowedMediaTypes = ["IMG","AUD"];
 
 var mediaSchema = new mongoose.Schema({
+    Name: {
 
+    },
     Path: {
         type: String,
         required: true,
@@ -11,8 +13,7 @@ var mediaSchema = new mongoose.Schema({
     },
     UsedIn: {
         type: [mongoose.Types.ObjectId],
-        required: true,
-        validate(v){ if(v.length == 0) return false; else return true; }
+        default: []
     },
     Owner: {
         type: mongoose.Types.ObjectId,

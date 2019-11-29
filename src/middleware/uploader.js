@@ -30,16 +30,18 @@ const storage = multer.diskStorage({
     destination: function (req, file, cb) {
 
         var path = file.pathToSave;
-
-        if (!fs.existsSync(path)) {
+        
+        if (!fs.existsSync("./public/uploads/" + req.requester._id))
+            fs.mkdirSync("./public/uploads/" + req.requester._id);
+        if(!fs.existsSync(path))
             fs.mkdirSync(path);
-        }
 
         cb(null, path);
 
     },
     filename: function (req, file, cb) {
-        cb(null, generateFileName(file.originalname));
+        file.nickname = generateFileName(file.originalname);
+        cb(null, file.nickname);
     }
 
 });
@@ -47,7 +49,7 @@ const storage = multer.diskStorage({
 const uploader = multer({
     storage,
     limits: {
-        fileSize: 1000000,
+        fileSize: 3000000,
         fields: 1,
         fieldNameSize: 15
     },
