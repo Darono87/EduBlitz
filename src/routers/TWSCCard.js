@@ -119,4 +119,10 @@ router.get("/card/:id", verify, async(req,res)=>{
 
 });
 
+router.patch("/card/:id", verify, async(req,res)=>{
+
+    
+
+});
+
 module.exports = router;
