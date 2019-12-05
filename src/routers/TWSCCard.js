@@ -5,6 +5,7 @@ const express = require("express");
 const TWSCCardModel = require("../models/TWSCCard");
 const verify = require("../middleware/verify");
 
+
 var router = express.Router();
 
 //CREATE
@@ -29,6 +30,7 @@ router.post("/card",verify, async (req,res)=>{
         newCard.TextsFront = req.body.TextsFront;
         newCard.LinkingFront = req.body.LinkingFront;
 
+        
         //Back data
 
         newCard.ImagesBack = req.body.ImagesBack;
@@ -38,7 +40,8 @@ router.post("/card",verify, async (req,res)=>{
 
         //validate
         
-        newCard.validateLinking();
+        var imgData = await newCard.validateLinking(req.requester);
+        await newCard.linkMediaToCard(imgData);
         
         //Extras and tags
 
@@ -63,8 +66,10 @@ router.post("/card",verify, async (req,res)=>{
     }catch(e){
 
         if(e.errors || e.message == "baddata" || e.name == "MongoError"){
+            console.log(e);
             res.status("400").send();
         } else{
+            console.log(e);
             res.status("500").send();
         }
 
@@ -93,7 +98,11 @@ router.get("/card/all",verify,async(req,res)=>{
 
     try{
         
-        var foundItems = await TWSCCardModel.find({Owner: req.requester._id});
+        var foundItems = await TWSCCardModel.find({Owner: req.requester._id})
+        .populate({path:"ImagesFront",select:"Path"})
+        .populate({path:"ImagesBack",select:"Path"})
+        .populate({path:"AudioFront",select:"Path"})
+        .populate({path:"AudioBack",select:"Path"}).exec();
         res.status(200).send(foundItems);
 
     }catch(e){
@@ -107,7 +116,11 @@ router.get("/card/:id", verify, async(req,res)=>{
     try{
 
         var toGet = req.params.id;
-        var foundItem = await TWSCCardModel.findOne({_id: toGet, Owner: req.requester._id});
+        var foundItem = await TWSCCardModel.findOne({_id: toGet, Owner: req.requester._id})
+        .populate({path:"ImagesFront",select:"Path"})
+        .populate({path:"ImagesBack",select:"Path"})
+        .populate({path:"AudioFront",select:"Path"})
+        .populate({path:"AudioBack",select:"Path"}).exec();
         if(!foundItem)
             res.status(404).send();
 
