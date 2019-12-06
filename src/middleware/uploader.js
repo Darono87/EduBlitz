@@ -16,8 +16,10 @@ function quickValidate(req, file, cb) {
         var path = "./public/uploads/" + req.requester._id + "/images";
         var type = "IMG";
     }
-    else
-        cb(null, false);
+    else{
+        cb(null, false, new Error("extension"));
+        return;
+    }
 
     file.pathToSave = path;
     file.fileType = type;

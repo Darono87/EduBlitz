@@ -96,7 +96,7 @@ router.delete("/card/:id",verify, async (req,res)=>{
         //Call function to check whether the medias are still connected to any cards
         //Inform the user that the potential useless medias can be removed  
         
-        var unconnectedMedia = TWSCCardModel.detectUnconnectedMedia(foundItem);
+        var unconnectedMedia = await TWSCCardModel.detectUnconnectedMedia(foundItem);
 
         res.status(200).send({foundItem,unconnectedMedia});
 
