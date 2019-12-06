@@ -12,8 +12,8 @@ var mediaSchema = new mongoose.Schema({
         trim: true
     },
     UsedIn: {
-        type: [mongoose.Types.ObjectId],
-        default: []
+        type: Boolean,
+        default: false
     },
     Owner: {
         type: mongoose.Types.ObjectId,

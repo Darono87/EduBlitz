@@ -42,13 +42,32 @@ const TWSCCard = new mongoose.Schema({
     }   
 });
 
-TWSCCard.methods.linkMediaToCard = async function(media){
-    for(var i = 0; i < 4; i++){
-        for(var k = 0; k < media[i].length; k++){
-            media[i][k].UsedIn.push(this._id);
-            await media[i][k].save();
-        }
+TWSCCard.statics.checkIfMediaIsUnconnected = async function(cardID, type, collector){
+    if(type === "img")
+        var somewhereElse = await TWSCCardModel.findOne({$or: [{ImagesFront: cardID},{ImagesBack: cardID}]});
+    else
+        var somewhereElse = await TWSCCardModel.findOne({$or: [{AudioFront: cardID},{AudioBack: cardID}]});
+    if(!somewhereElse){
+        collector.push(cardID);
+        var medium = await mediaModel.findOne({_id:cardID});
+        medium.UsedIn = false;
+        await medium.save();
     }
+
+}
+
+TWSCCard.statics.detectUnconnectedMedia = async function(deletedCard){
+    var unconnectedPhotos = [];
+    var unconnectedAudios = [];
+    for(var i = 0; i < deletedCard.ImagesFront.length; i++)
+        TWSCCard.checkIfMediaIsUnconnected(deletedCard.ImagesFront[i],"img",unconnectedPhotos);
+    for(var i = 0; i < deletedCard.ImagesBack.length; i++)
+        TWSCCard.checkIfMediaIsUnconnected(deletedCard.ImagesFront[i],"img",unconnectedPhotos);  
+    for(var i = 0; i < deletedCard.AudioFront.length; i++)
+        TWSCCard.checkIfMediaIsUnconnected(deletedCard.AudioFront[i],"aud",unconnectedAudios);  
+    for(var i = 0; i < deletedCard.AudioBack.length; i++)
+        TWSCCard.checkIfMediaIsUnconnected(deletedCard.AudioBack[i],"aud",unconnectedAudios);  
+    return {unconnectedPhotos,unconnectedAudios};
 }
 
 TWSCCard.methods.validateLinking = async function(requester){
@@ -78,8 +97,8 @@ TWSCCard.methods.validateLinking = async function(requester){
     imgCount = 0;
     txtCount = 0;
     audCount = 0;
-    imgFoundB = await mediaModel.find({_id:{$in: this.ImagesBack},Owner:requester._id});
-    audFoundB = await mediaModel.find({_id:{$in: this.AudioBack},Owner:requester._id});
+    var imgFoundB = await mediaModel.find({_id:{$in: this.ImagesBack},Owner:requester._id});
+    var audFoundB = await mediaModel.find({_id:{$in: this.AudioBack},Owner:requester._id});
 
     for(var i = 0; i < this.LinkingBack.length; i++){
         if(this.LinkingBack[i] === "txt")

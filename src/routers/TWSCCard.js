@@ -40,8 +40,15 @@ router.post("/card",verify, async (req,res)=>{
 
         //validate
         
-        var imgData = await newCard.validateLinking(req.requester);
-        await newCard.linkMediaToCard(imgData);
+        var medias = await newCard.validateLinking(req.requester);
+        
+        //set the medias to UsedIn = true 
+
+        for(var i = 0 ; i < medias.length; i++)
+            for(var k = 0; k < medias[i].length; k++){
+                medias[i][k].UsedIn = true;
+                medias[i][k].save();
+            }
         
         //Extras and tags
 
@@ -82,10 +89,16 @@ router.delete("/card/:id",verify, async (req,res)=>{
 
         var toDelete = req.params.id;
         var foundItem = await TWSCCardModel.findOneAndRemove({_id: toDelete, Owner: req.requester._id});
+
         if(!foundItem)
             res.status(404).send();
 
-        res.status(200).send(foundItem);
+        //Call function to check whether the medias are still connected to any cards
+        //Inform the user that the potential useless medias can be removed  
+        
+        var unconnectedMedia = TWSCCardModel.detectUnconnectedMedia(foundItem);
+
+        res.status(200).send({foundItem,unconnectedMedia});
 
     }catch(e){
         res.status(404).send();
