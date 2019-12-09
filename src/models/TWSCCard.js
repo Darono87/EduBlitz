@@ -42,7 +42,7 @@ const TWSCCard = new mongoose.Schema({
     }
 });
 
-var _checkIfMediaIsUnconnected = async function (mediaID, type) {
+var _isMediaUnconnected = async function (mediaID, type) {
 
     if (type === "img")
         var somewhereElse = await TWSCCardModel.findOne({ $or: [{ ImagesFront: mediaID }, { ImagesBack: mediaID }] });
@@ -62,24 +62,22 @@ TWSCCard.statics.detectUnconnectedMedia = async function (deletedCard) {
     var unconnectedPhotos = [];
     var unconnectedAudios = [];
     for (var i = 0; i < deletedCard.ImagesFront.length; i++)
-        if (await _checkIfMediaIsUnconnected(deletedCard.ImagesFront[i], "img"))
+        if (await _isMediaUnconnected(deletedCard.ImagesFront[i], "img"))
             unconnectedPhotos.push(deletedCard.ImagesFront[i]);
     for (var i = 0; i < deletedCard.ImagesBack.length; i++)
-        if (await _checkIfMediaIsUnconnected(deletedCard.ImagesBack[i], "img"))
+        if (await _isMediaUnconnected(deletedCard.ImagesBack[i], "img"))
             unconnectedPhotos.push(deletedCard.ImagesBack[i]);
     for (var i = 0; i < deletedCard.AudioFront.length; i++)
-        if (await _checkIfMediaIsUnconnected(deletedCard.AudioFront[i], "aud"))
+        if (await _isMediaUnconnected(deletedCard.AudioFront[i], "aud"))
             unconnectedPhotos.push(deletedCard.AudioFront[i]);
     for (var i = 0; i < deletedCard.AudioBack.length; i++)
-        if (await _checkIfMediaIsUnconnected(deletedCard.AudioBack[i], "aud"))
+        if (await _isMediaUnconnected(deletedCard.AudioBack[i], "aud"))
             unconnectedPhotos.push(deletedCard.AudioBack[i]);
 
     return { unconnectedPhotos, unconnectedAudios };
 }
 
 TWSCCard.methods.validateLinking = async function (requester) {
-
-    //relatively faster operation to check 
 
     var imgCount = 0;
     var txtCount = 0;
@@ -97,10 +95,7 @@ TWSCCard.methods.validateLinking = async function (requester) {
     }
     if (txtCount != this.TextsFront.length || imgCount != imgFound.length || audCount != audFound.length)
         throw new Error("baddata");
-
-
-
-
+        
     imgCount = 0;
     txtCount = 0;
     audCount = 0;
